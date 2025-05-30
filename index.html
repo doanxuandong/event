@@ -56,17 +56,13 @@
       flex-direction: column;
       align-items: center;
       width: 100%;
-      /* Animation mặc định là moveUpLoop, sẽ override cho cột ngoài */
-      transform: translateY(0);
-      animation: moveUpLoop 2.5s cubic-bezier(0.8,0,0.2,1) forwards;
-    }
-    .col-text.stopped {
-      animation: none;
-      transform: translateY(0);
+      position: absolute;
+      animation: moveUpLoop 10s linear infinite;
+      top: 0;
     }
     .col-text.move-down {
-      transform: translateY(0);
-      animation: moveDownLoop 2.5s cubic-bezier(0.8,0,0.2,1) forwards;
+      animation: moveDownLoop 10s linear infinite;
+      top: 0;
     }
     .word {
       font-size: 10vw;
@@ -89,19 +85,13 @@
       0% {
         transform: translateY(0);
       }
-      80% {
-        transform: translateY(-85%);
-      }
       100% {
-        transform: translateY(0);
+        transform: translateY(-50%);
       }
     }
     @keyframes moveDownLoop {
       0% {
-        transform: translateY(0);
-      }
-      80% {
-        transform: translateY(85%);
+        transform: translateY(-50%);
       }
       100% {
         transform: translateY(0);
@@ -130,7 +120,7 @@
     const columns = document.getElementById('columns');
 
     // Tăng số dòng lặp lại thật nhiều để không bị đứt đoạn
-    const repeatRows = 20;
+    const repeatRows = 50;
     for (let c = 0; c < numCols; c++) {
       const col = document.createElement('div');
       col.className = 'col';
@@ -140,22 +130,20 @@
       if (c === 0 || c === numCols - 1) {
         colText.classList.add('move-down');
       }
-      for (let i = 0; i < repeatRows; i++) {
-        const w = document.createElement('div');
-        w.className = 'word';
-        w.textContent = word;
-        colText.appendChild(w);
+      
+      // Tạo hai bản sao của text để tạo hiệu ứng liền mạch
+      for (let copy = 0; copy < 2; copy++) {
+        for (let i = 0; i < repeatRows; i++) {
+          const w = document.createElement('div');
+          w.className = 'word';
+          w.textContent = word;
+          colText.appendChild(w);
+        }
       }
+      
       col.appendChild(colText);
       columns.appendChild(col);
     }
-
-    // Sau khi animation kết thúc, giữ text ở vị trí dừng
-    setTimeout(() => {
-      document.querySelectorAll('.col-text').forEach(el => {
-        el.classList.add('stopped');
-      });
-    }, 2500); // Thời gian khớp với animation
   </script>
 </body>
 </html>
