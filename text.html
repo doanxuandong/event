@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Full Screen Moving Text Columns</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      /* background: #000; */
+      overflow: hidden;
+    }
+    body {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
+      position: relative;
+    }
+    #video-bg {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      z-index: -1;
+      object-fit: cover;
+    }
+    .columns {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      gap: 2vw;
+      position: relative;
+      z-index: 1;
+    }
+    .col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+      width: 32vw;
+      height: 100vh;
+      padding: 0;
+      margin: 0;
+    }
+    .col-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      /* Animation mặc định là moveUpLoop, sẽ override cho cột ngoài */
+      transform: translateY(0);
+      animation: moveUpLoop 2.5s cubic-bezier(0.8,0,0.2,1) forwards;
+    }
+    .col-text.stopped {
+      animation: none;
+      transform: translateY(0);
+    }
+    .col-text.move-down {
+      transform: translateY(0);
+      animation: moveDownLoop 2.5s cubic-bezier(0.8,0,0.2,1) forwards;
+    }
+    .word {
+      font-size: 10vw;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+      text-transform: uppercase;
+      user-select: none;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      width: 100%;
+      box-sizing: border-box;
+      display: block;
+    }
+    @keyframes moveUpLoop {
+      0% {
+        transform: translateY(0);
+      }
+      80% {
+        transform: translateY(-85%);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+    @keyframes moveDownLoop {
+      0% {
+        transform: translateY(0);
+      }
+      80% {
+        transform: translateY(85%);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+    .overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.3);
+      z-index: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <video id="video-bg" autoplay muted loop playsinline>
+    <source src="0528-1.mp4" type="video/mp4">
+  </video>
+  <div class="overlay"></div>
+  <div class="columns" id="columns"></div>
+  <script>
+    // Từ cho từng cột
+    const word = "EVENT"; // Bạn có thể đổi text ở đây
+    const numCols = 3;
+    const columns = document.getElementById('columns');
+
+    // Tăng số dòng lặp lại thật nhiều để không bị đứt đoạn
+    const repeatRows = 20;
+    for (let c = 0; c < numCols; c++) {
+      const col = document.createElement('div');
+      col.className = 'col';
+      const colText = document.createElement('div');
+      colText.className = 'col-text';
+      // Cột ngoài cùng sẽ di chuyển từ trên xuống
+      if (c === 0 || c === numCols - 1) {
+        colText.classList.add('move-down');
+      }
+      for (let i = 0; i < repeatRows; i++) {
+        const w = document.createElement('div');
+        w.className = 'word';
+        w.textContent = word;
+        colText.appendChild(w);
+      }
+      col.appendChild(colText);
+      columns.appendChild(col);
+    }
+
+    // Sau khi animation kết thúc, giữ text ở vị trí dừng
+    setTimeout(() => {
+      document.querySelectorAll('.col-text').forEach(el => {
+        el.classList.add('stopped');
+      });
+    }, 2500); // Thời gian khớp với animation
+  </script>
+</body>
+</html>
